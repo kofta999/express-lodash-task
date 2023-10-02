@@ -1,11 +1,11 @@
 const _ = require("lodash");
 
-const DEFAULT_CACHE_EXPIRY = 10000;
+const DEFAULT_CACHE_TTL = 10000;
 
 class CustomCache extends Map {
   constructor() {
     super();
-    this.cacheExpiry = DEFAULT_CACHE_EXPIRY;
+    this.cacheExpiry = DEFAULT_CACHE_TTL;
   }
 
   has(key) {
@@ -35,6 +35,10 @@ const blogSearcher = (keyword, blogs) => {
  */
 const fetchBlogs = async (url) => {
   try {
+    if (!url) {
+      throw new Error("URL invalid");
+    }
+
     const response = await fetch(url, {
       headers: { "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET },
     });
@@ -51,7 +55,7 @@ const fetchBlogs = async (url) => {
 
     return data.blogs;
   } catch (err) {
-    throw new Error("Error happened while fetching from the server");
+    throw new Error(err.message);
   }
 };
 
